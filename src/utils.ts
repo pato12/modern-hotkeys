@@ -20,7 +20,13 @@ const modifierAlias: Readonly<Record<string, string>> = Object.freeze({
   '↩︎': 'enter',
 });
 
-const modifierOrder = ['caps', 'ctrl', 'cmd', 'shift', 'alt'];
+const modifierOrder: Partial<Record<string, number>> = {
+  caps: 1,
+  ctrl: 2,
+  cmd: 3,
+  shift: 4,
+  alt: 5,
+};
 
 /**
  * Get a normalized key name from a key string (e.g. "shift+ctrl+alt+cmd+a")
@@ -33,8 +39,8 @@ export function normalizeKey(key: string, separator = '+') {
     .split(separator)
     .map((k) => modifierAlias[k] || k)
     .sort((a, b) => {
-      const aIndex = modifierOrder.indexOf(a);
-      const bIndex = modifierOrder.indexOf(b);
+      const aIndex = modifierOrder[a] ?? -1;
+      const bIndex = modifierOrder[b] ?? -1;
 
       if (aIndex > -1 && bIndex > -1) {
         return aIndex - bIndex;
