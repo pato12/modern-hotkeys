@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out..
+        uses: actions/checkout@v3
+      - name: Running node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '12.x'
+      - name: Install dependencies
+        run: yarn
+      - name: Linting
+        run: yarn lint
+      - name: Testing
+        run: yarn test:ci
