@@ -313,7 +313,7 @@ describe('hotkets', () => {
       test('meta', () => {
         let count = 0;
 
-        instance.hotkeys('cmd + a', () => {
+        instance.hotkeys('meta + a', () => {
           count++;
         });
 

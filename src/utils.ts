@@ -9,27 +9,27 @@ export function getKeys(key: string, separator = ',') {
 
 const modifierAlias: Readonly<Record<string, string>> = Object.freeze({
   option: 'alt',
-  command: 'cmd',
+  command: 'meta',
   control: 'ctrl',
   capslock: 'caps',
-  meta: 'cmd',
+  cmd: 'meta',
   '⇧': 'shift',
   '⌥': 'alt',
   '⌃': 'ctrl',
-  '⌘': 'cmd',
+  '⌘': 'meta',
   '↩︎': 'enter',
 });
 
 const modifierOrder: Partial<Record<string, number>> = {
   caps: 1,
   ctrl: 2,
-  cmd: 3,
+  meta: 3,
   shift: 4,
   alt: 5,
 };
 
 /**
- * Get a normalized key name from a key string (e.g. "shift+ctrl+alt+cmd+a")
+ * Get a normalized key name from a key string (e.g. "shift+ctrl+alt+meta+a")
  */
 export function normalizeKey(key: string, separator = '+') {
   key = key.replace(/\s/g, '');

@@ -25,11 +25,11 @@ describe('test utils', () => {
 
   describe('normalizeKey', () => {
     it('try normalize key', () => {
-      expect(normalizeKey('shift + ctrl + alt + cmd + a')).toEqual('ctrl+cmd+shift+alt+a');
+      expect(normalizeKey('shift + ctrl + alt + cmd + a')).toEqual('ctrl+meta+shift+alt+a');
     });
 
     it('try normalize with differente separator', () => {
-      expect(normalizeKey('shift - control - alt - command - a', '-')).toEqual('ctrl-cmd-shift-alt-a');
+      expect(normalizeKey('shift - control - alt - command - a', '-')).toEqual('ctrl-meta-shift-alt-a');
     });
 
     describe('try modifiers', () => {
@@ -50,11 +50,11 @@ describe('test utils', () => {
         expect(normalizeKey('⌃')).toEqual('ctrl');
       });
 
-      it('try cmd', () => {
-        expect(normalizeKey('cmd')).toEqual('cmd');
-        expect(normalizeKey('command')).toEqual('cmd');
-        expect(normalizeKey('⌘')).toEqual('cmd');
-        expect(normalizeKey('meta')).toEqual('cmd');
+      it('try meta', () => {
+        expect(normalizeKey('cmd')).toEqual('meta');
+        expect(normalizeKey('command')).toEqual('meta');
+        expect(normalizeKey('⌘')).toEqual('meta');
+        expect(normalizeKey('meta')).toEqual('meta');
       });
 
       it('try caps', () => {

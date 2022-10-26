@@ -125,7 +125,7 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
       }
 
       if (event.metaKey) {
-        keysDown.add('cmd');
+        keysDown.add('meta');
       }
 
       if (!layoutKey) {
@@ -167,7 +167,7 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
       }
 
       if (!event.metaKey) {
-        keysDown.delete('cmd');
+        keysDown.delete('meta');
       }
     };
 
