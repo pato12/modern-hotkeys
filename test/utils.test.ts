@@ -25,11 +25,11 @@ describe('test utils', () => {
 
   describe('normalizeKey', () => {
     it('try normalize key', () => {
-      expect(normalizeKey('shift + ctrl + alt + cmd + a')).toEqual('a+alt+cmd+ctrl+shift');
+      expect(normalizeKey('shift + ctrl + alt + cmd + a')).toEqual('ctrl+cmd+shift+alt+a');
     });
 
     it('try normalize with differente separator', () => {
-      expect(normalizeKey('shift - control - alt - command - a', '-')).toEqual('a-alt-cmd-ctrl-shift');
+      expect(normalizeKey('shift - control - alt - command - a', '-')).toEqual('ctrl-cmd-shift-alt-a');
     });
 
     describe('try modifiers', () => {
