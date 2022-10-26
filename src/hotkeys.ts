@@ -9,7 +9,9 @@ interface HotkeysParams {
   autoWatchKeys?: boolean;
 }
 
-type HotkeysCallback = { unbind: () => void };
+type HotkeysCallback = {
+  unbind: () => void;
+};
 
 type HotkeysOptions = {
   scope?: string;
@@ -196,7 +198,7 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
 
   function triggerHandler(event: TriggerEvent, e: KeyboardEvent) {
     const key = normalizeKey([...keysDown].join('+'));
-    const items = handlers.get(key) ?? [];
+    const items = [...(handlers.get(key) ?? []), ...(handlers.get('*') ?? [])];
 
     logger.debug('Triggering handler for key', key + ' (' + event + ')' + ' in scope ' + currentScope);
 

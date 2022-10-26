@@ -110,6 +110,25 @@ describe('hotkets', () => {
       expect(count).toBe(1);
     });
 
+    test('test asterisk to handle all events', () => {
+      let count = 0;
+
+      instance.hotkeys('*', () => {
+        count++;
+      });
+
+      unbindWatch = instance.watchKeys();
+
+      dispatchKeys(['KeyA']);
+      dispatchKeys(['KeyB']);
+      dispatchKeys(['KeyC']);
+      dispatchKeys(['Space']);
+      dispatchKeys(['Enter']);
+      dispatchKeys(['MetaLeft']);
+
+      expect(count).toBe(6);
+    });
+
     test('test all other keys', () => {
       let count = 0;
 
