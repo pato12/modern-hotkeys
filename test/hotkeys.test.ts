@@ -63,6 +63,38 @@ describe('hotkets', () => {
     expect(count).toBe(0);
   });
 
+  test('try alternative signature', () => {
+    let count = 0;
+
+    instance.hotkeys('a', 'testing', () => {
+      count++;
+    });
+
+    unbindWatch = instance.watchKeys();
+
+    instance.setScope('testing');
+
+    dispatchKeys(['KeyA']);
+
+    expect(count).toBe(1);
+  });
+
+  test('try send an invalid handler', () => {
+    expect(() => instance.hotkeys('a', null as any)).toThrow();
+  });
+
+  test('try clear keys on focus window', () => {
+    unbindWatch = instance.watchKeys();
+
+    dispatchKeyboardEvent('keydown', { code: 'KeyA' });
+
+    expect(instance.getKeysDown().size).toBe(1);
+
+    dispatchEvent(new FocusEvent('focus', { bubbles: true, cancelable: true }));
+
+    expect(instance.getKeysDown().size).toBe(0);
+  });
+
   describe('try activations', () => {
     test('test a single key', () => {
       let count = 0;
