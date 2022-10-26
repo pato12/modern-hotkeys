@@ -21,5 +21,7 @@ jobs:
         run: yarn
       - name: Linting
         run: yarn lint
+      - name: Building
+        run: yarn build
       - name: Testing
         run: yarn test:ci
