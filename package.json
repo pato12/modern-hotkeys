@@ -11,7 +11,8 @@
     "test": "jest --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint ."
   },
   "lint-staged": {
     "{src,test}/*.{js,ts}": [
