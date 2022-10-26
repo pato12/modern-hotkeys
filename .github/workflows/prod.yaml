@@ -12,11 +12,13 @@ jobs:
     steps:
       - name: Checking out..
         uses: actions/checkout@v3
-      - name: Setuping node and installing deps
+      - name: Setuping node
         uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: 'yarn'
+      - name: Installing deps
+        run: yarn
       - name: Linting
         run: yarn lint
       - name: Testing
