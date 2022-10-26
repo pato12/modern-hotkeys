@@ -54,21 +54,21 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
       event = (<HotkeysOptions>options).event ?? event;
     }
 
-    if (!action) {
-      throw new Error('No action provided');
-    }
-
-    const handlerItem: HandlerItem = {
-      action,
-      order,
-      event,
-      scope,
-    };
-
     keys.forEach((key) => {
       const normalizedKey = normalizeKey(key);
-
       const items = handlers.get(normalizedKey) ?? [];
+
+      if (!action) {
+        throw new Error('No action provided');
+      }
+
+      const handlerItem: HandlerItem = {
+        action,
+        order,
+        event,
+        scope,
+        key,
+      };
 
       handlers.set(
         normalizedKey,
@@ -207,7 +207,7 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
 
       if (item.event === event && item.scope === currentScope) {
         e.preventDefault();
-        item.action(e, { key, stopPropagation: () => (stop = true) });
+        item.action(e, { key: item.key, stopPropagation: () => (stop = true) });
 
         logger.debug('Triggered handler for key', key + ' (' + event + ')' + ' in scope ' + currentScope);
 

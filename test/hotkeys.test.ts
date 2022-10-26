@@ -163,6 +163,21 @@ describe('hotkets', () => {
       expect(count).toBe(1);
     });
 
+    test('test a multiple combinations', () => {
+      const aux: string[] = [];
+
+      instance.hotkeys('shift + a, meta + b', (e, h) => {
+        aux.push(h.key);
+      });
+
+      unbindWatch = instance.watchKeys();
+
+      dispatchKeys(['ShiftLeft', 'KeyA']);
+      dispatchKeys(['MetaLeft', 'KeyB']);
+
+      expect(aux).toEqual(['shift+a', 'meta+b']);
+    });
+
     test('test multiple combinations with string', () => {
       let count = 0;
 

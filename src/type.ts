@@ -9,4 +9,5 @@ export type HandlerItem = {
   order: number;
   event: TriggerEvent;
   scope?: string;
+  key: string;
 };
