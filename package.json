@@ -9,7 +9,6 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "pretest": "yarn build",
-    "prepublishOnly": "yarn run build",
     "test": "jest --coverage --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci",
@@ -24,7 +23,6 @@
   },
   "np": {
     "yarn": true,
-    "contents": "dist",
     "branch": "main"
   },
   "devDependencies": {
