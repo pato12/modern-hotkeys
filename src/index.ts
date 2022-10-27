@@ -1,5 +1,6 @@
 import { createHotkeys } from './hotkeys';
 import { Layouts, KeyboardLayout, LayoutKey } from './layouts';
+import { HotkeysHandler, HotkeysEvent } from './type';
 
 const defaultInstance = createHotkeys({ element: document.body });
 
@@ -27,4 +28,6 @@ export {
   Layouts,
   KeyboardLayout,
   LayoutKey,
+  HotkeysHandler,
+  HotkeysEvent,
 };
