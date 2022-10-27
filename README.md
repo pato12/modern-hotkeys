@@ -331,3 +331,7 @@ hotkeys(
   { scope: 'myscope' },
 );
 ```
+
+# License
+
+MIT
