@@ -47,9 +47,9 @@ Modern HotKeys understands the following modifiers: `â‡§`, `shift`, `option`, `â
 
 To see all suported keys check out the layouts:
 
-- [en-us](./blob/main/src/layouts/en-us.ts)
-- [es-es](./blob/main/src/layouts/es-es.ts)
-- [es-la](./blob/main/src/layouts/es-la.ts)
+- [en-us](./src/layouts/en-us.ts)
+- [es-es](./src/layouts/es-es.ts)
+- [es-la](./src/layouts/es-la.ts)
 
 If you need an other layout you can create using the interface `KeyboardLayout`.
 
