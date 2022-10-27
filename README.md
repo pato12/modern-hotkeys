@@ -1,7 +1,7 @@
 # modern-hotkeys
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/pato12/modern-hotkeys">
+  <img src="https://img.shields.io/npm/l/modern-hotkeys">
   <img src="https://img.shields.io/npm/dt/modern-hotkeys">
   <img src="https://img.shields.io/npm/v/modern-hotkeys">
   <img src="https://img.shields.io/github/stars/pato12/modern-hotkeys?style=social">
