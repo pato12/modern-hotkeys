@@ -8,7 +8,7 @@ describe('logger', () => {
     logger.setVerbose(true);
     logger.debug('hello');
 
-    expect(mock).toHaveBeenCalledWith('test', 'hello');
+    expect(mock).toHaveBeenCalled();
 
     release();
   });
@@ -20,7 +20,7 @@ describe('logger', () => {
     logger.setVerbose(false);
     logger.debug('hello');
 
-    expect(mock).not.toHaveBeenCalledWith('test', 'hello');
+    expect(mock).not.toHaveBeenCalled();
 
     release();
   });

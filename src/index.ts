@@ -4,30 +4,22 @@ import { HotkeysHandler, HotkeysEvent } from './type';
 
 const defaultInstance = createHotkeys({ element: document.body });
 
-const hotkeys = defaultInstance.hotkeys;
-const getScope = defaultInstance.getScope;
-const setScope = defaultInstance.setScope;
-const getKeysDown = defaultInstance.getKeysDown;
-const isPressed = defaultInstance.isPressed;
-const setKeyboardLayout = defaultInstance.setKeyboardLayout;
-const getKeyboardLayout = defaultInstance.getKeyboardLayout;
-const unbind = defaultInstance.unbind;
-const setEventFilter = defaultInstance.setEventFilter;
+const hotkeys = Object.assign(defaultInstance.hotkeys, {
+  getScope: defaultInstance.getScope,
+  setScope: defaultInstance.setScope,
+  getKeysDown: defaultInstance.getKeysDown,
+  isPressed: defaultInstance.isPressed,
+  setKeyboardLayout: defaultInstance.setKeyboardLayout,
+  getKeyboardLayout: defaultInstance.getKeyboardLayout,
+  unbind: defaultInstance.unbind,
+  setEventFilter: defaultInstance.setEventFilter,
+  setVerbose: defaultInstance.setVerbose,
+  getPressedKeyStrings: defaultInstance.getPressedKeyStrings,
+  trigger: defaultInstance.trigger,
+  unbindAll: defaultInstance.unbindAll,
+  watchKeys: defaultInstance.watchKeys,
+});
 
-export {
-  getScope,
-  setScope,
-  hotkeys,
-  getKeysDown,
-  isPressed,
-  setKeyboardLayout,
-  getKeyboardLayout,
-  unbind,
-  setEventFilter,
-  createHotkeys,
-  Layouts,
-  KeyboardLayout,
-  LayoutKey,
-  HotkeysHandler,
-  HotkeysEvent,
-};
+export { hotkeys, createHotkeys, Layouts, KeyboardLayout, LayoutKey, HotkeysHandler, HotkeysEvent };
+
+export default hotkeys;

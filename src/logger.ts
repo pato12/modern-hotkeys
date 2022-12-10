@@ -7,7 +7,7 @@ export function createLogger(name: string) {
 
   function debug(...args: any[]) {
     if (verbose) {
-      console.debug(name, ...args);
+      console.debug(`%c[${name}]`, 'font-weight:bold;color:white;', ...args);
     }
   }
 

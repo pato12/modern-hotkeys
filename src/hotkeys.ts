@@ -3,10 +3,13 @@ import { KeyboardLayout, Layouts } from './layouts';
 import type { HandlerItem, HotkeysHandler, TriggerEvent } from './type';
 import { createLogger } from './logger';
 
+const DEFAULT_SCOPE = 'default';
+
 interface HotkeysParams {
   element: HTMLElement;
   keyboard?: KeyboardLayout;
   autoWatchKeys?: boolean;
+  watchCaps?: boolean;
 }
 
 type HotkeysCallback = {
@@ -19,7 +22,7 @@ type HotkeysOptions = {
   event?: TriggerEvent;
 };
 
-function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = true }: HotkeysParams) {
+function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = true, watchCaps = false }: HotkeysParams) {
   const logger = createLogger('hotkeys');
 
   const keysDown: Set<string> = new Set();
@@ -27,43 +30,54 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
 
   let keyboardLayout = defaultKeyboard ?? Layouts['en-us'];
   let eventFilter = defaultInputFilter;
-  let currentScope = 'all';
+  let currentScope = DEFAULT_SCOPE;
   let unbindWatch: (() => void) | undefined;
 
-  function hotkeys(key: string | string[], handler: HotkeysHandler, options?: HotkeysOptions): HotkeysCallback;
   function hotkeys(key: string | string[], scope: string, handler: HotkeysHandler): HotkeysCallback;
-  function hotkeys(key: string | string[], handler: any, options: any): HotkeysCallback {
+  function hotkeys(key: string | string[], options: HotkeysOptions, handler: HotkeysHandler): HotkeysCallback;
+  function hotkeys(key: string | string[], handler: HotkeysHandler, options?: HotkeysOptions): HotkeysCallback;
+  function hotkeys(
+    key: string | string[],
+    arg1: HotkeysHandler | HotkeysOptions | string,
+    arg2?: HotkeysOptions | HotkeysHandler,
+  ): HotkeysCallback {
     const keys = getKeys(Array.isArray(key) ? key.join(',') : key);
 
-    let action: HotkeysHandler | undefined;
     let order = 0;
     let event: TriggerEvent = 'keydown';
-    let scope = 'all';
+    let scope = DEFAULT_SCOPE;
 
-    if (typeof handler === 'string') {
-      scope = handler;
-    } else if (typeof handler === 'function') {
-      action = handler;
+    let handler: HotkeysHandler | undefined;
+    let options: HotkeysOptions | undefined;
+
+    if (typeof arg1 === 'string') {
+      scope = arg1;
+    } else if (typeof arg1 === 'function') {
+      handler = arg1;
+    } else {
+      options = arg1;
     }
 
-    if (typeof options === 'function') {
-      action = options;
-    } else if (typeof options === 'object') {
-      scope = (<HotkeysOptions>options).scope ?? scope;
-      order = (<HotkeysOptions>options).order ?? order;
-      event = (<HotkeysOptions>options).event ?? event;
+    if (typeof arg2 === 'function') {
+      handler = arg2;
+    } else if (typeof arg2 === 'object') {
+      options = arg2;
     }
+
+    scope = options?.scope ?? scope;
+    order = options?.order ?? order;
+    event = options?.event ?? event;
 
     keys.forEach((key) => {
       const normalizedKey = normalizeKey(key);
       const items = handlers.get(normalizedKey) ?? [];
 
-      if (!action) {
+      if (!handler) {
         throw new Error('No action provided');
       }
 
       const handlerItem: HandlerItem = {
-        action,
+        action: handler,
         order,
         event,
         scope,
@@ -84,7 +98,9 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
     const unbind = () => {
       keys.forEach((key) => {
         const normalizedKey = normalizeKey(key);
-        const items = handlers.get(normalizedKey) ?? [];
+        const items = handlers.get(normalizedKey);
+
+        if (!items) return;
 
         handlers.set(
           normalizedKey,
@@ -107,35 +123,28 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
 
     logger.debug('Watching keys');
 
+    // If meta is pressed, we have to release those keys on keyup
+    const keysToRelease: string[] = [];
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!eventFilter(event)) return false;
 
       const layoutKey = keyboardLayout[event.code];
-
-      // Fix specials keys
-
-      if (event.shiftKey) {
-        keysDown.add('shift');
-      }
-
-      if (event.altKey) {
-        keysDown.add('alt');
-      }
-
-      if (event.ctrlKey) {
-        keysDown.add('ctrl');
-      }
-
-      if (event.metaKey) {
-        keysDown.add('meta');
-      }
 
       if (!layoutKey) {
         logger.debug('No layout key for', event.code);
         return;
       }
 
-      keysDown.add(normalizeKey(layoutKey.value));
+      const value = normalizeKey(layoutKey.value);
+
+      if (value === 'caps' && !watchCaps) return;
+
+      // Fix for meta key
+      if (keysDown.has('meta')) keysToRelease.push(value);
+      if (value === 'meta') keysToRelease.push(...keysDown);
+
+      keysDown.add(value);
 
       triggerHandler('keydown', event);
     };
@@ -152,24 +161,15 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
 
       triggerHandler('keyup', event);
 
-      keysDown.delete(normalizeKey(layoutKey.value));
+      const value = normalizeKey(layoutKey.value);
 
-      // Fix specials keys
+      keysDown.delete(value);
 
-      if (!event.shiftKey) {
-        keysDown.delete('shift');
-      }
-
-      if (!event.altKey) {
-        keysDown.delete('alt');
-      }
-
-      if (!event.ctrlKey) {
-        keysDown.delete('ctrl');
-      }
-
-      if (!event.metaKey) {
-        keysDown.delete('meta');
+      // Fix for meta key
+      if (value === 'meta' && keysToRelease.length > 0) {
+        logger.debug('Releasing keys after meta key up', keysToRelease.slice());
+        keysToRelease.forEach((key) => keysDown.delete(key));
+        keysToRelease.length = 0;
       }
     };
 
@@ -196,20 +196,20 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
     return unbind;
   }
 
-  function triggerHandler(event: TriggerEvent, e: KeyboardEvent) {
+  function triggerHandler(trigger: TriggerEvent, event: KeyboardEvent) {
     const key = normalizeKey([...keysDown].join('+'));
     const items = [...(handlers.get(key) ?? []), ...(handlers.get('*') ?? [])];
 
-    logger.debug('Triggering handler for key', key + ' (' + event + ')' + ' in scope ' + currentScope);
+    logger.debug('Triggering handler for key', key + ' (' + trigger + ')' + ' in scope ' + currentScope);
 
     for (const item of items) {
       let stop = false;
 
-      if (item.event === event && item.scope === currentScope) {
-        e.preventDefault();
-        item.action(e, { key: item.key, stopPropagation: () => (stop = true) });
+      if (item.event === trigger && item.scope === currentScope) {
+        event.preventDefault();
+        item.action(event, { key: item.key, stopPropagation: () => (stop = true) });
 
-        logger.debug('Triggered handler for key', key + ' (' + event + ')' + ' in scope ' + currentScope);
+        logger.debug('Triggered handler for key', key + ' (' + trigger + ')' + ' in scope ' + currentScope);
 
         if (stop) break;
       }
@@ -252,12 +252,41 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
     return keysDown.has(normalizedKey);
   }
 
+  function trigger(key: string, scope = DEFAULT_SCOPE) {
+    const normalizedKey = normalizeKey(key);
+    const items = handlers.get(normalizedKey) ?? [];
+
+    logger.debug('Triggering handler for key', normalizedKey + ' in scope ' + scope);
+
+    const fakeEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+    });
+
+    Object.defineProperty(fakeEvent, 'message', {
+      writable: false,
+      value: 'Event triggered by user',
+    });
+
+    for (const item of items) {
+      if (item.scope === scope) {
+        item.action(fakeEvent, { key: item.key, stopPropagation: () => {} });
+
+        logger.debug('Triggered handler for key', normalizedKey + ' in scope ' + scope);
+      }
+    }
+  }
+
+  function getPressedKeyStrings() {
+    return [...keysDown];
+  }
+
   function unbindAll() {
     handlers.clear();
     logger.debug('Unbinded all handlers');
   }
 
-  function unbind(key?: string, scope: string = 'all') {
+  function unbind(key?: string, scope = DEFAULT_SCOPE) {
     if (!key) {
       unbindAll();
       return;
@@ -271,7 +300,7 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
       items.filter((item) => item.scope !== scope),
     );
 
-    logger.debug('Unbinded handlers for key', normalizedKey + (scope ? ` in scope ${scope}` : ''));
+    logger.debug('Unbinded handlers for key', normalizedKey, ` in scope ${scope}`);
   }
 
   return {
@@ -286,6 +315,8 @@ function createHotkeys({ element, keyboard: defaultKeyboard, autoWatchKeys = tru
     setKeyboardLayout,
     setVerbose,
     setEventFilter,
+    getPressedKeyStrings,
+    trigger,
     isPressed,
   };
 }

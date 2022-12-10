@@ -4,23 +4,18 @@
 
 import { createHotkeys, Layouts } from '../dist';
 
-const instance = createHotkeys({
-  element: document.body,
-  keyboard: Layouts['en-us'],
-  autoWatchKeys: false,
-});
-
-// turn on verbose mode to see debug messages
-instance.setVerbose(false);
-
 describe('hotkets', () => {
-  let unbindWatch: (() => void) | undefined;
+  let instance: ReturnType<typeof createHotkeys>;
 
   beforeEach(() => {
-    instance.unbindAll();
-    instance.setScope('all');
-    instance.setEventFilter(() => true);
-    if (unbindWatch) unbindWatch();
+    instance = createHotkeys({
+      element: document.body,
+      keyboard: Layouts['en-us'],
+      autoWatchKeys: false,
+    });
+
+    // turn on verbose mode to see debug messages
+    instance.setVerbose(false);
   });
 
   test('try auto watch keys in true', () => {
@@ -70,7 +65,7 @@ describe('hotkets', () => {
       count++;
     });
 
-    unbindWatch = instance.watchKeys();
+    instance.watchKeys();
 
     instance.setScope('testing');
 
@@ -84,7 +79,7 @@ describe('hotkets', () => {
   });
 
   test('try clear keys on focus window', () => {
-    unbindWatch = instance.watchKeys();
+    instance.watchKeys();
 
     dispatchKeyboardEvent('keydown', { code: 'KeyA' });
 
@@ -103,7 +98,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['KeyA']);
 
@@ -117,7 +112,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['KeyA']);
       dispatchKeys(['KeyB']);
@@ -136,7 +131,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       const keys = Object.keys(Layouts['en-us']);
 
@@ -156,7 +151,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -170,7 +165,7 @@ describe('hotkets', () => {
         aux.push(h.key);
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
       dispatchKeys(['MetaLeft', 'KeyB']);
@@ -185,7 +180,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
       dispatchKeys(['ShiftLeft', 'KeyB']);
@@ -200,7 +195,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
       dispatchKeys(['ShiftLeft', 'KeyB']);
@@ -215,7 +210,7 @@ describe('hotkets', () => {
         count++;
       });
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['InvalidKey']);
 
@@ -242,7 +237,7 @@ describe('hotkets', () => {
         { order: 2 },
       );
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -268,7 +263,7 @@ describe('hotkets', () => {
         { order: 2 },
       );
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -286,7 +281,7 @@ describe('hotkets', () => {
         { event: 'keyup' },
       );
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeyboardEvent('keydown', { code: 'ShiftLeft' });
       dispatchKeyboardEvent('keydown', { code: 'KeyA' });
@@ -307,7 +302,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ShiftLeft', 'KeyA']);
         dispatchKeys(['ShiftRight', 'KeyA']);
@@ -322,7 +317,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ControlLeft', 'KeyA']);
 
@@ -336,7 +331,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['AltLeft', 'KeyA']);
         dispatchKeys(['AltRight', 'KeyA']);
@@ -351,36 +346,12 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['MetaLeft', 'KeyA']);
         dispatchKeys(['MetaRight', 'KeyA']);
 
         expect(count).toBe(2);
-      });
-
-      test('test special keys with event flags', () => {
-        let count = 0;
-
-        instance.hotkeys('shift + a, control + a, meta + a, option + a', () => {
-          count++;
-        });
-
-        unbindWatch = instance.watchKeys();
-
-        dispatchKeyboardEvent('keydown', { shiftKey: true, code: 'KeyA' });
-        dispatchKeyboardEvent('keyup', { code: 'KeyA' });
-
-        dispatchKeyboardEvent('keydown', { ctrlKey: true, code: 'KeyA' });
-        dispatchKeyboardEvent('keyup', { code: 'KeyA' });
-
-        dispatchKeyboardEvent('keydown', { metaKey: true, code: 'KeyA' });
-        dispatchKeyboardEvent('keyup', { code: 'KeyA' });
-
-        dispatchKeyboardEvent('keydown', { altKey: true, code: 'KeyA' });
-        dispatchKeyboardEvent('keyup', { code: 'KeyA' });
-
-        expect(count).toBe(4);
       });
     });
 
@@ -392,7 +363,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -412,7 +383,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -423,6 +394,32 @@ describe('hotkets', () => {
         dispatchKeys(['ShiftLeft', 'KeyA']);
 
         expect(count).toBe(1);
+      });
+
+      test('try unbind a no registered hotkey', () => {
+        let count = 0;
+
+        instance.hotkeys('shift + a', () => {
+          count++;
+        });
+
+        instance.watchKeys();
+
+        dispatchKeys(['ShiftLeft', 'KeyA']);
+
+        expect(count).toBe(1);
+
+        instance.unbind('shift+b');
+
+        dispatchKeys(['ShiftLeft', 'KeyA']);
+
+        expect(count).toBe(2);
+
+        instance.unbind('shift+c', 'other');
+
+        dispatchKeys(['ShiftLeft', 'KeyA']);
+
+        expect(count).toBe(3);
       });
 
       test('the callback and other scope', () => {
@@ -436,7 +433,7 @@ describe('hotkets', () => {
           { scope: 'other' },
         );
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         instance.setScope('other');
 
@@ -462,7 +459,7 @@ describe('hotkets', () => {
           { scope: 'other' },
         );
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         instance.setScope('other');
 
@@ -478,7 +475,7 @@ describe('hotkets', () => {
       });
 
       test('try unbind watcher', () => {
-        unbindWatch = instance.watchKeys();
+        const unbindWatch = instance.watchKeys();
 
         dispatchKeyboardEvent('keydown', { code: 'KeyA' });
 
@@ -500,7 +497,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -520,7 +517,7 @@ describe('hotkets', () => {
           count++;
         });
 
-        unbindWatch = instance.watchKeys();
+        instance.watchKeys();
 
         dispatchKeys(['ShiftLeft', 'KeyA']);
 
@@ -547,7 +544,7 @@ describe('hotkets', () => {
         { scope: 'testing' },
       );
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['KeyA']);
 
@@ -567,7 +564,7 @@ describe('hotkets', () => {
 
       instance.setScope('testing');
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeys(['KeyA']);
 
@@ -588,7 +585,7 @@ describe('hotkets', () => {
       count++;
     });
 
-    unbindWatch = instance.watchKeys();
+    instance.watchKeys();
 
     dispatchKeys(['Minus']);
 
@@ -609,7 +606,7 @@ describe('hotkets', () => {
       count++;
     });
 
-    unbindWatch = instance.watchKeys();
+    instance.watchKeys();
 
     dispatchKeys(['KeyA']);
 
@@ -622,11 +619,92 @@ describe('hotkets', () => {
     expect(count).toBe(1);
   });
 
+  describe('watchKeys', () => {
+    test('try watchKeys', () => {
+      let count = 0;
+
+      instance.hotkeys('a', () => {
+        count++;
+      });
+
+      const unbind = instance.watchKeys();
+
+      dispatchKeys(['KeyA']);
+
+      expect(count).toBe(1);
+
+      unbind();
+
+      dispatchKeys(['KeyA']);
+
+      expect(count).toBe(1);
+    });
+
+    test('try call twice times watchKeys', () => {
+      const unbind1 = instance.watchKeys();
+      const unbind2 = instance.watchKeys();
+
+      expect(unbind1).toBe(unbind2);
+    });
+  });
+
+  describe('trigger', () => {
+    test('try simple trigger', () => {
+      let count = 0;
+
+      instance.hotkeys('a', () => {
+        count++;
+      });
+
+      instance.watchKeys();
+
+      instance.trigger('a');
+
+      instance.trigger('b');
+
+      expect(count).toBe(1);
+    });
+
+    test('try tigger with scope', () => {
+      let count = 0;
+
+      instance.hotkeys(
+        'a',
+        () => {
+          count++;
+        },
+        { scope: 'testing' },
+      );
+
+      instance.watchKeys();
+
+      instance.trigger('a', 'testing');
+
+      instance.trigger('a', 'other');
+
+      expect(count).toBe(1);
+    });
+
+    test('try tigger a not defined hotkeys', () => {
+      let count = 0;
+
+      instance.hotkeys('a', () => {
+        count++;
+      });
+
+      instance.watchKeys();
+
+      instance.trigger('b');
+
+      expect(count).toBe(0);
+    });
+  });
+
   describe('utils', () => {
     test('try getKeysDown', () => {
       const keys = instance.getKeysDown();
 
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeyboardEvent('keydown', { code: 'KeyA' });
 
@@ -635,7 +713,7 @@ describe('hotkets', () => {
     });
 
     test('try isPressed', () => {
-      unbindWatch = instance.watchKeys();
+      instance.watchKeys();
 
       dispatchKeyboardEvent('keydown', { code: 'KeyA' });
 
@@ -644,6 +722,14 @@ describe('hotkets', () => {
       dispatchKeyboardEvent('keyup', { code: 'KeyA' });
 
       expect(instance.isPressed('a')).toBeFalsy();
+    });
+
+    test('try getPressedKeyStrings', () => {
+      instance.watchKeys();
+
+      dispatchKeyboardEvent('keydown', { code: 'KeyA' });
+
+      expect(instance.getPressedKeyStrings()).toEqual(['a']);
     });
   });
 });

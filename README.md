@@ -7,7 +7,7 @@
   <img src="https://img.shields.io/github/stars/pato12/modern-hotkeys?style=social">
 </p>
 
-modern-hotkeys is a brand new library to create keyboard shortcuts using modern APIs. It has backward compatibility with hotkeys. Has no dependencies.
+modern-hotkeys is a library that makes it easy to create hotkeys for your applications. It uses modern APIs and supports multiple combinations of keyboard layouts. Furthermore, its customizable event filter and scope system allows you to easily add hotkeys to any part of your application. You can create a smooth and reliable hotkey experience for your users. It has no dependencies.
 
 ## How to install
 
@@ -34,27 +34,27 @@ hotkeys('shift + a', (event, handler) => {
 
 # Main difference with Hotkeys
 
-- always prevent default all events
-- set an order in your shortcuts
-- stop propagation if you have multiple shorcuts with the same keys
-- use modern [apis](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code)
-- prepared to work with different keyboard layouts such as Spanish (by default it's enUS)
-- create your own instance
+- Always prevent default all events
+- Set an order in your shortcuts
+- Stop propagation if you have multiple shorcuts with the same keys
+- Use modern [APIs](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code)
+- Prepared to work with different keyboard layouts such as Spanish (by default it's enUS)
+- Create your own instance
 
 # Supported Keys
 
 Modern HotKeys understands the following modifiers: `⇧`, `shift`, `option`, `⌥`, `alt`, `ctrl`, `control`, `⌃`, `command`, and `⌘`.
 
-To see all suported keys check out the layouts:
+To see all supported keys check out the layouts:
 
 - [en-us](./src/layouts/en-us.ts)
 - [es-es](./src/layouts/es-es.ts)
 - [es-la](./src/layouts/es-la.ts)
 
-If you need an other layout you can create using the interface `KeyboardLayout`.
+If you need another layout you can create using the interface `KeyboardLayout`.
 
 ```ts
-import { KeyboardLayout, setKeyboardLayout } from 'modern-hotkeys';
+import { KeyboardLayout, hotkeys } from 'modern-hotkeys';
 
 const MyLayout: KeyboardLayout = {
   Backspace: { value: 'backspace' },
@@ -63,7 +63,7 @@ const MyLayout: KeyboardLayout = {
   ...
 };
 
-setKeyboardLayout(MyLayout);
+hotkeys.setKeyboardLayout(MyLayout);
 ```
 
 # Define a shortcut
@@ -94,18 +94,29 @@ instance.hotkeys('command + s, ctrl + s', () => {
 
 ## API references
 
+## createHotkeys
+
+Creates a new instance of `hotkeys` with the specified options.
+
+### Parameters
+
+- `element` (`HTMLElement`): Element to bind events to.
+- `keyboard` (`KeyboardLayout`): Keyboard layout to use. Default is `Layouts['en-us']`.
+- `autoWatchKeys` (`boolean`): Whether to automatically watch for keys. Default is `true`.
+- `watchCaps` (`boolean`): Whether to watch for the `CapsLock` key. Default is `false`.
+
 ## scope
 
 Scopes allow you to isolate your shortcuts and only execute depending on the scope that your app is running.
 
 ```tsx
-import { hotkeys, setScope, getScope } from 'modern-hotkeys';
+import { hotkeys } from 'modern-hotkeys';
 
 hotkeys('command + s, ctrl + s', 'file', () => {
-  alert('saving file! you are in the scope ' + getScope());
+  alert('saving file! you are in the scope ' + hotkeys.getScope());
 });
 
-<button onClick={() => setScope('file')}>set file scope</button>;
+<button onClick={() => hotkeys.setScope('file')}>set file scope</button>;
 
 // or if you have your instance
 
@@ -125,12 +136,12 @@ instance.hotkeys('command + s, ctr + s', 'file', () => {
 Returns a `Set` with all keys down.
 
 ```ts
-import { hotkeys, getKeysDown } from 'modern-hotkeys';
+import { hotkeys } from 'modern-hotkeys';
 
 hotkeys('a, b, c', () => {
-  console.log(getKeysDown.has('a'));
-  console.log(getKeysDown.has('b'));
-  console.log(getKeysDown.has('c'));
+  console.log(hotkeys.getKeysDown().has('a'));
+  console.log(hotkeys.getKeysDown().has('b'));
+  console.log(hotkeys.getKeysDown().has('c'));
 });
 ```
 
@@ -139,12 +150,12 @@ hotkeys('a, b, c', () => {
 Return a boolean to know if a key is pressed
 
 ```ts
-import { hotkeys, isPressed } from 'modern-hotkeys';
+import { hotkeys } from 'modern-hotkeys';
 
 hotkeys('a, b, c', () => {
-  console.log(isPressed('a'));
-  console.log(isPressed('b'));
-  console.log(isPressed('c'));
+  console.log(hotkeys.isPressed('a'));
+  console.log(hotkeys.isPressed('b'));
+  console.log(hotkeys.isPressed('c'));
 });
 ```
 
@@ -153,11 +164,11 @@ hotkeys('a, b, c', () => {
 You can get the default layouts exported by the library with `Layouts` or create your own one. To change the layout use the `setKeyboardLayout`.
 
 ```ts
-import { hotkeys, setKeyboardLayout, Layouts } from 'modern-hotkeys';
+import { hotkeys, Layouts } from 'modern-hotkeys';
 
 hotkeys(...);
 
-setKeyboardLayout(Layouts['es-la']);
+hotkeys.setKeyboardLayout(Layouts['es-la']);
 
 
 // or if you have your instance
@@ -175,16 +186,16 @@ instance.setKeyboardLayout(Layouts['es-la']);
 Unbind a shortcut or all shortcuts.
 
 ```ts
-import { unbind } from 'modern-hotkeys';
+import { hotkeys } from 'modern-hotkeys';
 
 // unbind defined key
-unbind('ctrl + s');
+hotkeys.unbind('ctrl + s');
 
 // unbind defined key and scope
-unbind('command + s', 'my-scope-files');
+hotkeys.unbind('command + s', 'my-scope-files');
 
 // unbind all
-unbind();
+hotkeys.unbind();
 
 // or if you have your instance
 
@@ -204,16 +215,16 @@ instance.unbind();
 
 ## setEventFilter
 
-Useful to filter input events and not fire shortcut when the user is writing on a input.
+Useful to filter input events and not fire shortcut when the user is writing on an input.
 
 ```ts
-import { setEventFilter } from 'modern-hotkeys';
+import { hotkeys } from 'modern-hotkeys';
 
 // filter inputs
-setEventFilter((e) => e.target?.tagName !== 'INPUT');
+hotkeys.setEventFilter((e) => e.target?.tagName !== 'INPUT');
 
 // allow all events
-setEventFilter(() => true);
+hotkeys.setEventFilter(() => true);
 
 // or if you have your instance
 
@@ -261,14 +272,14 @@ hotkeys(
 hotkeys(
   'escape',
   () => {
-    // it won't be fired
+    // it won't be triggered
     alert('cancelling 2!');
   },
   { order: 1 },
 );
 ```
 
-## options
+## Options
 
 The third argument of `hotkeys` could be an object with options.
 
